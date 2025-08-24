@@ -2,31 +2,47 @@ import re
 
 email_pattern = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
+
+def validate_name(name):
+    if name is None:
+        return False
+    
+    # Delete space form beginning and end
+    if name.strip() == "":
+        return False
+    
+    return True
+
+def validate_email(email):
+    if email is None:
+        return False
+    
+    if not email_pattern.match(email):
+        return False
+    
+    return True
+
+def validate_message(message):
+    if not message:
+        return False
+    
+    if message.strip() == "":
+        return False
+    
+    return True
+
+
 def validate_form(data):
-    errors = {}
-
-    required_fields = ["name","email","message"]
-
-    for field in required_fields:
-        value = data.get(field)
-        if value is None or value.strip() == "":
-            errors[field] = "This field cannot be empty"
-        else:
-            data[field] = str(value).strip()
-        
+    if not validate_name(data.get("name","")):
+        return False,"Name cannot be empty"
     
-    email = data.get("email","")
-
-    if email and not email_pattern.match(email):
-        errors["email"] = "The email format is not valid"
+    if not validate_email(data.get("email","")):
+        return False,"Invalid email format"
     
-    if len(errors) == 0:
-        is_valid = True
-    else:
-        is_valid = False
-
-    return is_valid , errors
-
+    if not validate_message(data.get("message","")):
+        return False,"Message cannot be empty"
+    
+    return True,"Form is valid"
 form1 = {"name": "Ali", "email": "ali@example.com", "message": "salam"}
 form2 = {"name": "", "email": "wrong@", "message": "  "}
 
